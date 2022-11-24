@@ -1,0 +1,17 @@
+--Find SQL IDs waiting
+SELECT s.sid, s.schemaname, s.username, s.osuser, s.program, 
+s.module, s.blocking_session,s.BLOCKING_SESSION_STATUS, s.logon_time||''||to_char(s.logon_time,'hh24:mi:ss') as logon_time,
+t.sql_id,t.piece
+from
+v$sqltext t, v$session s
+where t.address = s.sql_address
+and t.hash_value = s.sql_hash_value
+and s.username = 'SYS'
+order by t.sql_id, t.piece;
+
+--user object privilages
+select * from TABLE_PRIVILEGES p where p.table_name = 'EMP';
+select * from SYS.all_tab_privs where type = 'table' and table_name = '';
+
+--find column present in tables
+select * from all_tab_columns a where a.column_name like '%emp_name%' and owner like '%HR%';
