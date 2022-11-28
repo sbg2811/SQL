@@ -1,0 +1,94 @@
+create table emp
+( emp_ID int
+, emp_NAME varchar(50)
+, SALARY int);
+
+insert into emp values(101, 'Mohan', 40000);
+insert into emp values(102, 'James', 50000);
+insert into emp values(103, 'Robin', 60000);
+insert into emp values(104, 'Carol', 70000);
+insert into emp values(105, 'Alice', 80000);
+insert into emp values(106, 'Jimmy', 90000);
+
+--Scenario Fetch employees earning more than average salary
+select emp_id, emp_name, salary
+from emp e 
+where e.salary > (select avg(salary)as avg_sal from emp);
+
+with average_sal (avg_sal)
+  as (select avg(salary)as avg_sal from emp)
+select * from
+emp e, average_sal a
+where e.salary > a.avg_sal;
+
+**************************************************************************************************************************************
+DrOP table sales ;
+create table sales
+(
+	store_id  		int,
+	store_name  	varchar(50),
+	product			varchar(50),
+	quantity		int,
+	cost			int
+);
+
+insert all 
+into sales values (1, 'Apple Originals 1','iPhone 12 Pro', 1, 1000)
+into sales values (1, 'Apple Originals 1','MacBook pro 13', 3, 2000)
+into sales values (1, 'Apple Originals 1','AirPods Pro', 2, 280)
+into sales values (2, 'Apple Originals 2','iPhone 12 Pro', 2, 1000)
+into sales values (3, 'Apple Originals 3','iPhone 12 Pro', 1, 1000)
+into sales values (3, 'Apple Originals 3','MacBook pro 13', 1, 2000)
+into sales values (3, 'Apple Originals 3','MacBook Air', 4, 1100)
+into sales values (3, 'Apple Originals 3','iPhone 12', 2, 1000)
+into sales values (3, 'Apple Originals 3','AirPods Pro', 3, 280)
+into sales values (4, 'Apple Originals 4','iPhone 12 Pro', 2, 1000)
+into sales values (4, 'Apple Originals 4','MacBook pro 13', 1, 2500)
+select 1 from dual;
+
+select * from sales;
+
+--Fetch stores whoes sale is better than average sale of all stores (complicated way - repetitative subqueries)
+
+select store_id, sum(cost) as total_sales_per_store
+from sales
+group by store_id;
+
+select avg(total_sales_per_store) as avg_sale_all_store
+from
+(select store_id, sum(cost) as total_sales_per_store
+from sales
+group by store_id);
+
+select 
+*
+from
+(select store_id, sum(cost) as total_sales_per_store
+from sales
+group by store_id) ts
+join
+(select avg(total_sales_per_store) as avg_sale_all_store
+from
+(select store_id, sum(cost) as total_sales_per_store
+from sales
+group by store_id)) av
+on ts.total_sales_per_store > av.avg_sale_all_store;
+
+
+--With Clause
+
+with TOTAL_SALE(store_id, total_sales_per_store) as
+      (select store_id, sum(cost) as total_sales_per_store
+        from sales
+        group by store_id
+      ),
+    AVG_SALE(avg_sale_all_store) as
+      (select avg(total_sales_per_store) as avg_sale_all_store
+      from TOTAL_SALE                         --2nd level of repitation from above query is taken care
+      )
+select *
+from TOTAL_SALE ts join AVG_SALE av
+on ts.total_sales_per_store > av.avg_sale_all_store;
+
+
+
