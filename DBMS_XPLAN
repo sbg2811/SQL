@@ -1,0 +1,7 @@
+explain plan for
+query;
+
+select plan_table_output from table (dbms_xplan.display());
+
+set auto trace on
+execute the query
